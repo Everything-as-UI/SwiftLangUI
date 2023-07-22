@@ -10,7 +10,8 @@ import DocumentUI
 public extension String {
     static let space = " "
     static let newline = "\n"
-    static let commaSpace = ", "
+    static let comma = ","
+    static var commaSpace: Self { comma + space }
     static let arrow = "->"
 
     func repeating(_ count: Int) -> Self {

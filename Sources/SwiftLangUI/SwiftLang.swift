@@ -78,6 +78,7 @@ public struct Parenthesis {
     public static let curve = Self(open: "{", close: "}")
     public static let triangular = Self(open: "<", close: ">")
     public static let round = Self(open: "(", close: ")")
+    public static let square = Self(open: "[", close: "]")
 
     public func prefixed(_ prefix: String) -> Self {
         Self(open: prefix + open, close: close)
@@ -256,21 +257,22 @@ public struct ClosureDecl: TextDocument {
         name
         ForEach(generics, separator: .commaSpace, content: { $0 })
             .parenthical(.triangular)
-        ForEach(args, separator: .commaSpace, content: { $0 })
-            .parenthical(.round) // TODO: add environment variable with style configuration
+        Brackets(parenthesis: .round) {
+            ForEach(args, separator: .commaSpace, content: { $0 }) // TODO: add environment variable with style configuration
+        }
         ForEach(traits, separator: .space, content: { $0 }).prefix(String.space)
         result.prefix(String.space + .arrow + .space)
     }
 
     public struct Arg: TextDocument {
-        public let name: String
+        public let label: String
         public let type: String // TODO: add enum with case closure(ClosureDecl)
         public let argName: String?
         public let defaultValue: String?
         public let attributes: [String]
 
-        public init(name: String = "_", type: String, argName: String? = nil, defaultValue: String? = nil, attributes: [String] = []) {
-            self.name = name
+        public init(label: String = "_", type: String, argName: String? = nil, defaultValue: String? = nil, attributes: [String] = []) {
+            self.label = label
             self.type = type
             self.argName = argName
             self.defaultValue = defaultValue
@@ -279,7 +281,7 @@ public struct ClosureDecl: TextDocument {
 
         public var textBody: some TextDocument {
             Joined(separator: " ", elements: attributes).suffix(" ")
-            ForEach([name, argName], separator: " ", content: { $0 })
+            ForEach([label, argName], separator: " ", content: { $0 })
             type.prefix(": ")
             defaultValue.prefix(" = ")
         }
@@ -290,8 +292,8 @@ public struct ClosureDecl: TextDocument {
 extension ClosureDecl.Arg {
     @TextDocumentBuilder
     public func implementation(_ context: ImplementationResolverContext) -> some TextDocument {
-        if name != "_" {
-            name + ": "
+        if label != "_" {
+            label + ": "
         }
         implementationResolver.resolve(for: self, with: context)
     }
