@@ -27,6 +27,26 @@ extension SwiftLangUITests {
         let defImpl = protocolDecl.implementation(inExtension: true, with: .context(""))
         print("\(defImpl)")
     }
+
+    func testEnum() {
+        let enumType = Enum(typeName: "Variants", inherits: ["String"], modifiers: [.public], cases: [
+            Enum.Case(name: "variant1", associatedTypes: [ClosureDecl.Arg(label: nil, type: "String")]),
+            Enum.Case(name: "variant2", indirect: true)
+        ])
+        print("\(enumType)")
+    }
+
+    func testObject() throws {
+        let objectType = ObjectType.class(name: "SomeObject", modifiers: [.public, .final], properties: [
+            Variable(name: "string", type: "String", mutable: true, body: .computed(Variable.ComputedBody(getter: "\"value\"")))
+        ], functions: [
+            .initializer() {
+                "print(Self.self)"
+            },
+            FunctionV2(name: "doSomething") {}
+        ])
+        print("\(objectType)")
+    }
 }
 
 // MARK: - DocumentUI

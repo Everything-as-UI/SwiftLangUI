@@ -9,7 +9,7 @@ import CoreUI
 import DocumentUI
 
 public enum Keyword: String { // TODO: separate to different enums
-    case `class`, `enum`, `func`, `protocol`, `struct`, `typealias`, `extension`
+    case `class`, `enum`, `protocol`, `struct`, `typealias`, `extension`, `func`, initWord = "init"
     case `fileprivate`, `internal`, `private`, `public`, `open`
     case `let`, `var`
     case `lazy`, `static`, `weak`, `unowned`

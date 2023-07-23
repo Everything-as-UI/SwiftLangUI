@@ -11,10 +11,10 @@ import DocumentUI
 public struct ProtocolDecl: TextDocument {
     public let decl: TypeDecl
     public let vars: [Var]
-    public let funcs: [Function]
+    public let funcs: [ClosureDecl]
     public let associatedTypes: [AssociatedType]
 
-    public init(name: String, vars: [Var] = [], funcs: [Function] = [], associatedTypes: [AssociatedType] = [], modifiers: [Keyword] = [],
+    public init(name: String, vars: [Var] = [], funcs: [ClosureDecl] = [], associatedTypes: [AssociatedType] = [], modifiers: [Keyword] = [],
                 inherits: [String] = [], generics: [Generic] = [], attributes: [String] = []) {
         self.decl = TypeDecl(name: name, modifiers: modifiers + [.protocol], inherits: inherits, generics: generics, attributes: attributes)
         self.vars = vars
@@ -38,12 +38,12 @@ public struct ProtocolDecl: TextDocument {
         public let mutable: Bool
 
         public init(decl: VarDecl, mutable: Bool) {
-            self.decl = decl
+            self.decl = decl.withModifiers([])
             self.mutable = mutable
         }
 
-        public init(name: String, type: String, modifiers: [Keyword] = [], attributes: [String] = [], mutable: Bool = false) {
-            self.decl = VarDecl(name: name, type: type, modifiers: modifiers, attributes: attributes)
+        public init(name: String, type: String, attributes: [String] = [], mutable: Bool = false) {
+            self.decl = VarDecl(name: name, type: type, attributes: attributes)
             self.mutable = mutable
         }
 

@@ -23,6 +23,29 @@ extension EnvironmentValues {
     }
 }
 
+private enum CodeStyleKey: InheritableEnvironmentKey {
+    static let defaultValue: CodeStyle = CodeStyle()
+}
+
+public struct CodeStyle: Combinable {
+    public let maxArgsInSingleLine: Int?
+
+    public init(maxArgsInSingleLine: Int? = 2) {
+        self.maxArgsInSingleLine = maxArgsInSingleLine
+    }
+
+    public func combined(with other: CodeStyle) -> CodeStyle {
+        CodeStyle(maxArgsInSingleLine: other.maxArgsInSingleLine ?? maxArgsInSingleLine)
+    }
+}
+
+extension EnvironmentValues {
+    public var codeStyle: CodeStyle {
+        get { self[CodeStyleKey.self] }
+        set { self[CodeStyleKey.self] = newValue }
+    }
+}
+
 // MARK: Implementation resolver
 
 public struct ImplementationEnvironment {
@@ -83,7 +106,7 @@ public protocol ImplementationResolver {
     func resolve(with context: ImplementationResolverContext) -> AnyTextDocument
     func resolve(for arg: ClosureDecl.Arg, with context: ImplementationResolverContext) -> AnyTextDocument
     func resolve(for variable: VarDecl, inExtension: Bool, mutable: Bool, with context: ImplementationResolverContext) -> AnyTextDocument
-    func resolve(for function: Function, with context: ImplementationResolverContext) -> AnyTextDocument
+    func resolve(for closureDecl: ClosureDecl, with context: ImplementationResolverContext) -> AnyTextDocument
     func resolve(for protocolDecl: ProtocolDecl, inExtension: Bool, with context: ImplementationResolverContext) -> AnyTextDocument
 }
 extension ImplementationResolver {
@@ -101,7 +124,7 @@ extension ImplementationResolver {
     public func resolve(for variable: VarDecl, inExtension: Bool, mutable: Bool, with context: ImplementationResolverContext) -> AnyTextDocument {
         inheritedResolver.resolve(for: variable, inExtension: inExtension, mutable: mutable, with: context)
     }
-    public func resolve(for function: Function, with context: ImplementationResolverContext) -> AnyTextDocument {
+    public func resolve(for function: ClosureDecl, with context: ImplementationResolverContext) -> AnyTextDocument {
         inheritedResolver.resolve(for: function, with: context)
     }
     public func resolve(for protocolDecl: ProtocolDecl, inExtension: Bool, with context: ImplementationResolverContext) -> AnyTextDocument {
@@ -164,8 +187,8 @@ public struct DefaultImplementationResolver: ImplementationResolver {
             }
         }.erased
     }
-    public func resolve(for function: Function, with _: ImplementationResolverContext) -> AnyTextDocument {
-        guard function.decl.result != nil else { return NullDocument().erased }
+    public func resolve(for function: ClosureDecl, with _: ImplementationResolverContext) -> AnyTextDocument {
+        guard function.result != nil else { return NullDocument().erased }
         return AnyTextDocument("fatalError(\"unimplemented\")")
     }
 }

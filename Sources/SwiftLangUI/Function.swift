@@ -10,29 +10,31 @@ import DocumentUI
 
 public struct Function: TextDocument {
     public let decl: ClosureDecl
+    public let body: AnyTextDocument
 
-    init(decl: ClosureDecl) {
+    init(decl: ClosureDecl, body: AnyTextDocument) {
         self.decl = decl
+        self.body = body
     }
 
-    public init(name: String, args: [ClosureDecl.Arg] = [], result: String? = nil, generics: [Generic] = [], modifiers: [Keyword] = [], traits: [Keyword] = [], attributes: [String] = []) {
+    public init<Body: TextDocument>(name: String, args: [ClosureDecl.Arg] = [], result: String? = nil, generics: [Generic] = [], modifiers: [Keyword] = [], traits: [Keyword] = [], attributes: [String] = [], @TextDocumentBuilder body: () -> Body) {
         self.decl = ClosureDecl(name: name, args: args, result: result, generics: generics, modifiers: modifiers + [.func], traits: traits, attributes: attributes)
+        self.body = body().erased
+    }
+
+    public static func initializer<Body: TextDocument>(args: [ClosureDecl.Arg] = [], generics: [Generic] = [], modifiers: [Keyword] = [], traits: [Keyword] = [], attributes: [String] = [], @TextDocumentBuilder body: () -> Body) -> Self {
+        Self.init(decl: ClosureDecl(name: "init", args: args, generics: generics, modifiers: modifiers, traits: traits, attributes: attributes), body: body().erased)
     }
 
     public var textBody: some TextDocument {
-        decl
+        decl.withBody {
+            body
+        }
     }
 
     @Environment(\.implementationResolver) private var implementationResolver
 }
 extension Function {
-    @TextDocumentBuilder
-    public func implementation(_ context: ImplementationResolverContext) -> some TextDocument {
-        DeclWithBody(decl: self) {
-            implementationResolver.resolve(for: self, with: context)
-        }
-    }
-
     @TextDocumentBuilder
     public func call(in instance: String?, with context: ImplementationResolverContext = .context("")) -> some TextDocument {
         instance.suffix(String.dot)
@@ -49,9 +51,9 @@ extension Function {
 }
 extension Function {
     public func withName(_ name: String) -> Self {
-        Self(decl: decl.withName(name))
+        Self(decl: decl.withName(name), body: body)
     }
     public func withModifiers(_ modifiers: [Keyword]) -> Self {
-        Self(decl: decl.withModifiers(modifiers + [.func]))
+        Self(decl: decl.withModifiers(modifiers + [.func]), body: body)
     }
 }
