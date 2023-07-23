@@ -74,6 +74,7 @@ public struct ImplementationResolverContext {
     }
 }
 
+// TODO: may be use environment values instead of context
 public protocol ImplementationResolver {
     var inheritedResolver: any ImplementationResolver { get }
 
@@ -106,7 +107,7 @@ extension ImplementationResolver {
     public func resolve(for protocolDecl: ProtocolDecl, inExtension: Bool, with context: ImplementationResolverContext) -> AnyTextDocument {
         Group {
             ForEach(protocolDecl.vars, separator: .newline) {
-                resolve(for: $0.decl, inExtension: inExtension, mutable: $0.mutable, with: context)
+                $0.decl.implementation(inExtension: inExtension, mutable: $0.mutable, context: context)
             }
             ForEach(protocolDecl.funcs, separator: .newline) { $0.implementation(context) }
                 .startingWithNewline(protocolDecl.vars.isEmpty ? 0 : 2)

@@ -13,6 +13,7 @@ public extension String {
     static let comma = ","
     static var commaSpace: Self { comma + space }
     static let arrow = "->"
+    static let dot = "."
 
     func repeating(_ count: Int) -> Self {
         Self(repeating: self, count: count)
