@@ -14,7 +14,7 @@ public enum Keyword: String { // TODO: separate to different enums
     case `let`, `var`
     case `lazy`, `static`, `weak`, `unowned`
     case `async`, `await`, `throws`, `rethrows`
-    case `final`
+    case `final`, `override`, `required`
     case propertyWrapper, main
 }
 extension Keyword: TextDocument {

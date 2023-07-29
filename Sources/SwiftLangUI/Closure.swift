@@ -67,7 +67,7 @@ extension ClosureDecl {
         public let defaultValue: String?
         public let attributes: [String]
 
-        public init(label: String? = "_", type: String, argName: String? = nil, defaultValue: String? = nil, attributes: [String] = []) {
+        public init(label: String? = "_", argName: String? = nil, type: String, defaultValue: String? = nil, attributes: [String] = []) {
             self.label = label
             self.type = type
             self.argName = argName

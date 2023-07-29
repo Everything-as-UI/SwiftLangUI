@@ -66,7 +66,7 @@ public struct Variable: TextDocument {
     }
 
     public var textBody: some TextDocument {
-        decl.appendingModifiers(mutable || body.isComputed ? [.var] : [.let])
+        decl.appendingModifiers(mutable || body.isComputed || decl.modifiers.contains(.weak) ? [.var] : [.let])
         body
     }
 

@@ -17,13 +17,19 @@ public struct Function: TextDocument {
         self.body = body
     }
 
+    public init<Body: TextDocument>(decl: ClosureDecl, @TextDocumentBuilder body: () -> Body) {
+        assert(decl.modifiers.contains(.func))
+        self.decl = decl
+        self.body = body().erased
+    }
+
     public init<Body: TextDocument>(name: String, args: [ClosureDecl.Arg] = [], result: String? = nil, generics: [Generic] = [], modifiers: [Keyword] = [], traits: [Keyword] = [], attributes: [String] = [], @TextDocumentBuilder body: () -> Body) {
         self.decl = ClosureDecl(name: name, args: args, result: result, generics: generics, modifiers: modifiers + [.func], traits: traits, attributes: attributes)
         self.body = body().erased
     }
 
-    public static func initializer<Body: TextDocument>(args: [ClosureDecl.Arg] = [], generics: [Generic] = [], modifiers: [Keyword] = [], traits: [Keyword] = [], attributes: [String] = [], @TextDocumentBuilder body: () -> Body) -> Self {
-        Self.init(decl: ClosureDecl(name: "init", args: args, generics: generics, modifiers: modifiers, traits: traits, attributes: attributes), body: body().erased)
+    public static func initializer<Body: TextDocument>(optional: Bool = false, args: [ClosureDecl.Arg] = [], generics: [Generic] = [], modifiers: [Keyword] = [], traits: [Keyword] = [], attributes: [String] = [], @TextDocumentBuilder body: () -> Body) -> Self {
+        Self.init(decl: ClosureDecl(name: "init" + (optional ? "?" : ""), args: args, generics: generics, modifiers: modifiers, traits: traits, attributes: attributes), body: body().erased)
     }
 
     public var textBody: some TextDocument {
