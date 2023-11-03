@@ -15,14 +15,14 @@ final class SwiftLangUITests: XCTestCase {}
 extension SwiftLangUITests {
     func testProtocol() {
         let var1 = ProtocolDecl.Var(name: "dataSource", type: "[String]")
-        let func1 = Function(name: "viewDidLoad")
+        let func1 = ClosureDecl.function(name: "viewDidLoad")
         let protocolDecl = ProtocolDecl(name: "SomeModuleInput", vars: [var1], funcs: [func1])
         print("\(protocolDecl)")
     }
 
     func testProtocolImplementation() {
-        let var1 = ProtocolDecl.Var(name: "dataSource", type: "[String]", mutable: false)
-        let func1 = Function(name: "viewDidLoad", result: "Void")
+        let var1 = ProtocolDecl.Var(name: "dataSource", type: "[String]")
+        let func1 = ClosureDecl.function(name: "viewDidLoad", result: "Void")
         let protocolDecl = ProtocolDecl(name: "SomeModuleInput", vars: [var1], funcs: [func1])
         let defImpl = protocolDecl.implementation(inExtension: true, with: .context(""))
         print("\(defImpl)")
@@ -37,14 +37,14 @@ extension SwiftLangUITests {
     }
 
     func testObject() throws {
-        let objectType = ObjectType.class(name: "SomeObject", modifiers: [.public, .final], properties: [
+        let objectType = ObjectType.class(name: "SomeObject", properties: [
             Variable(name: "string", type: "String", mutable: true, body: .computed(Variable.ComputedBody(getter: "\"value\"")))
         ], functions: [
             .initializer() {
                 "print(Self.self)"
             },
-            FunctionV2(name: "doSomething") {}
-        ])
+            Function(name: "doSomething") {}
+        ], modifiers: [.public, .final])
         print("\(objectType)")
     }
 }

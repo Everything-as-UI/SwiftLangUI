@@ -16,6 +16,7 @@ public enum Keyword: String { // TODO: separate to different enums
     case `async`, `await`, `throws`, `rethrows`
     case `final`, `override`, `required`
     case propertyWrapper, main
+    case `case`, `default`
 }
 extension Keyword: TextDocument {
     public var textBody: some TextDocument { rawValue }
@@ -23,7 +24,7 @@ extension Keyword: TextDocument {
 
 public struct Comment {
     public enum CommentType {
-        case line(documented: Bool)
+        case line(documented: Bool = false)
         case block
         case newLineBlock
     }

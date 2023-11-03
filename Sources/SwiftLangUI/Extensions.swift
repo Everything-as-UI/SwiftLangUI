@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Extensions.swift
 //  
 //
 //  Created by Denis Koryttsev on 11.03.23.
@@ -22,14 +22,10 @@ public extension String {
 
 public extension String {
     func startsLowercased() -> String {
-        let first = String(prefix(1))
-        let other = String(dropFirst())
-        return first.lowercased() + other
+        prefix(1).lowercased() + dropFirst()
     }
     func startsUppercased() -> String {
-        let first = String(prefix(1))
-        let other = String(dropFirst())
-        return first.uppercased() + other
+        prefix(1).uppercased() + dropFirst()
     }
 }
 

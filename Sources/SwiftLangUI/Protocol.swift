@@ -35,23 +35,43 @@ public struct ProtocolDecl: TextDocument {
 
     public struct Var: TextDocument {
         public let decl: VarDecl
-        public let mutable: Bool
-
-        public init(decl: VarDecl, mutable: Bool) {
-            self.decl = decl.withModifiers([])
-            self.mutable = mutable
+        public let accessor: Accessor
+        public var mutable: Bool {
+            guard case .mutable = accessor else { return false }
+            return true
         }
 
-        public init(name: String, type: String, attributes: [String] = [], mutable: Bool = false) {
+        public enum Accessor {
+            case mutable
+            case immutable(throwing: Bool = false, async: Bool = false)
+        }
+
+        public init(decl: VarDecl, accessor: Accessor) {
+            self.decl = decl.withModifiers([])
+            self.accessor = accessor
+        }
+
+        public init(name: String, type: String, attributes: [String] = [], accessor: Accessor = .immutable()) {
             self.decl = VarDecl(name: name, type: type, attributes: attributes)
-            self.mutable = mutable
+            self.accessor = accessor
         }
 
         @Environment(\.implementationResolver) private var implementationResolver
 
         public var textBody: some TextDocument {
             decl.appendingModifiers([.var])
-            mutable ? " { get set }" : " { get }"
+            switch accessor {
+            case .mutable: " { get set }"
+            case .immutable(let throwing, let async):
+                " { get "
+                if async {
+                    "async "
+                }
+                if throwing {
+                    "throws "
+                }
+                "}"
+            }
         }
     }
 
